@@ -5,7 +5,7 @@ import { Home, Package, Bell, Settings, ChevronLeft, ChevronRight, BookOpen, Tra
 import UserProfile from "./UserProfile"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
+function Sidebar({ activeTab, setActiveTab, user, onLogout, isOpen = false, onClose }) {
   const [collapsed, setCollapsed] = useState(false)
   
   const menuItems = [
@@ -21,17 +21,11 @@ function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
     const newCollapsedState = !collapsed;
     setCollapsed(newCollapsedState);
     
-    // Apply a style to the main content directly
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-      if (newCollapsedState) {
-        mainContent.style.marginLeft = '80px';
-        mainContent.style.maxWidth = 'calc(100% - 80px)';
-        mainContent.style.width = 'calc(100% - 80px)';
-      } else {
-        mainContent.style.marginLeft = '280px';
-        mainContent.style.maxWidth = 'calc(100% - 280px)';
-        mainContent.style.width = 'calc(100% - 280px)';
+    // On tablet/desktop, shift main content to make room for sidebar
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        mainContent.style.marginLeft = newCollapsedState ? '80px' : '280px';
       }
     }
   }
@@ -44,7 +38,7 @@ function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
   };
 
   return (
-    <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+    <div className={`sidebar ${collapsed ? "collapsed" : ""} ${isOpen ? "open" : ""}`} role="navigation" aria-label="Primary">
       <div className="logo">
         {!collapsed && "WasteNot"}
       </div>
@@ -56,7 +50,10 @@ function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
           <div
             key={item.id}
             className={`nav-item ${activeTab === item.id ? "active" : ""}`}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {
+              setActiveTab(item.id)
+              if (onClose) onClose()
+            }}
             title={collapsed ? item.label : ""}
           >
             {item.icon}
@@ -72,7 +69,10 @@ function Sidebar({ activeTab, setActiveTab, user, onLogout }) {
         />
         <button 
           className="logout-button" 
-          onClick={handleLogoutClick}
+          onClick={() => {
+            handleLogoutClick()
+            if (onClose) onClose()
+          }}
         >
           <LogOut size={20} />
           {!collapsed && <span>Logout</span>}

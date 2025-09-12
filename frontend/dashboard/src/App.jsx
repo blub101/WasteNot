@@ -383,6 +383,8 @@ function App() {
 
   // State for login/signup form toggle
   const [showLoginForm, setShowLoginForm] = useState(true);
+  // Sidebar open state (must be declared at top-level to respect hooks order)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Load card size preferences
   useEffect(() => {
@@ -2530,12 +2532,38 @@ function App() {
   // Regular app UI for authenticated users
   return (
     <div className="app">
+      <button
+        className="hamburger-btn"
+        aria-label="Open sidebar navigation"
+        aria-expanded={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        {/* Hamburger icon */}
+        <span className="hamburger-bar" />
+        <span className="hamburger-bar" />
+        <span className="hamburger-bar" />
+      </button>
+
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         user={user} // Pass user explicitly
         onLogout={handleLogout} // Pass logout function 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
+
+      {isSidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          role="button"
+          aria-label="Close sidebar overlay"
+          onClick={() => setIsSidebarOpen(false)}
+        >
+          {/* Ensure overlay doesn't block clicks inside sidebar */}
+        </div>
+      )}
+
       <ThemeToggle />
       <div className="main-content">
         {renderContent()}

@@ -77,9 +77,9 @@
 
 /* Theme Toggle Button */
 .theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  position: absolute;
+  top: clamp(12px, 3vw, 20px);
+  right: calc(env(safe-area-inset-right, 0px) + clamp(12px, 3vw, 20px));
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -89,7 +89,7 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 1102;
   box-shadow: var(--shadow);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -161,9 +161,17 @@ body::after {
 
 .app {
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   overflow-x: hidden;
+  width: 100%;
+}
+
+/* Reserve space for persistent sidebar on tablet/desktop */
+@media (min-width: 768px) {
+  .app {
+    padding-left: 0;
+  }
 }
 
 /* Sidebar Styles */
@@ -177,7 +185,7 @@ body::after {
   box-shadow: var(--shadow-sm);
   position: fixed;
   height: 100vh;
-  z-index: 10;
+  z-index: 1101;
   transition: all 0.3s ease;
   left: 0;
   top: 0;
@@ -265,12 +273,12 @@ body::after {
 /* Main Content Styles */
 .main-content {
   flex: 1;
-  padding: 40px;
+  padding: clamp(16px, 4vw, 40px);
   margin-left: 280px;
   transition: margin-left 0.3s ease;
   box-sizing: border-box;
   position: relative;
-  max-width: calc(100% - 280px);
+  max-width: 100%;
 }
 
 .collapsed+.main-content {
@@ -279,17 +287,17 @@ body::after {
 }
 
 h1 {
-  margin-bottom: 32px;
+  margin-bottom: clamp(16px, 3vw, 32px);
   color: var(--text-color);
   font-weight: 600;
 }
 
 .app-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 800;
   color: var(--text-color);
   letter-spacing: -1px;
-  margin-bottom: 48px;
+  margin-bottom: clamp(20px, 5vw, 48px);
   position: relative;
   display: inline-block;
 }
@@ -307,9 +315,9 @@ h1 {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   grid-auto-rows: minmax(200px, auto);
-  grid-gap: 32px;
+  grid-gap: clamp(16px, 3vw, 32px);
   width: 100%;
 }
 
@@ -439,7 +447,7 @@ h1 {
   background-color: var(--card-background);
   border-radius: 16px;
   box-shadow: var(--shadow);
-  padding: 28px;
+  padding: clamp(16px, 3vw, 28px);
   /* height: 100%; */
   border: 1px solid var(--border-color);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
@@ -1442,98 +1450,85 @@ form {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .app {
-    flex-direction: column;
+    flex-direction: row;
   }
 
+  /* Off-canvas sidebar: hidden by default on mobile */
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    padding: 16px 0;
+    transform: translateX(-100%);
+    width: 260px;
+    height: 100vh;
+    padding: 20px 0;
   }
 
-  .sidebar.collapsed {
-    width: 100%;
-    height: 60px;
-    overflow: hidden;
+  .sidebar.open {
+    transform: translateX(0);
   }
 
   .sidebar-toggle {
-    top: 18px;
-    right: 20px;
-    transform: rotate(90deg);
-  }
-
-  .sidebar.collapsed .sidebar-toggle {
-    transform: rotate(-90deg);
-  }
-
-  .nav-menu {
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 0 16px;
-    overflow-x: auto;
-  }
-
-  .nav-item {
-    flex-direction: column;
-    padding: 12px;
-    text-align: center;
-    gap: 6px;
-    min-width: 80px;
-  }
-
-  .nav-item.active {
-    border-left: none;
-    position: relative;
-  }
-
-  .nav-item.active::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 25%;
-    width: 50%;
-    height: 3px;
-    background-color: var(--primary-color);
-    border-radius: 3px;
+    display: none;
   }
 
   .main-content {
-    padding: 20px;
+    padding: clamp(12px, 4vw, 20px);
     margin-left: 0;
-  }
-
-  .collapsed+.main-content {
-    margin-left: 0;
+    max-width: 100%;
   }
 
   .dashboard-grid {
     grid-template-columns: 1fr;
-    grid-gap: 24px;
+    grid-gap: clamp(16px, 4vw, 24px);
   }
 
-  .small-card,
-  .medium-card,
-  .large-card {
-    transform: scale(1);
-    margin: 0;
+  /* Hamburger button visible on mobile */
+  .hamburger-btn {
+    position: fixed;
+    top: clamp(10px, 3vw, 14px);
+    left: clamp(10px, 3vw, 14px);
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    z-index: 1001;
+    box-shadow: var(--shadow);
   }
 
-  .card-size-option {
-    padding-bottom: 16px;
+  .hamburger-bar {
+    width: 22px;
+    height: 2px;
+    background-color: var(--text-color);
+    border-radius: 2px;
   }
 
-  .size-selector {
-    flex-wrap: wrap;
+  /* Dark overlay behind the sidebar */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    backdrop-filter: blur(1px);
+  }
+}
+
+@media (min-width: 768px) {
+  /* Tablet and up: persistent sidebar; hide hamburger */
+  .hamburger-btn,
+  .sidebar-overlay {
+    display: none;
   }
 
-  .size-btn {
-    flex: 1;
-    min-width: 70px;
-    text-align: center;
+  /* Let main content fill remaining width; no negative max-width constraints */
+  .main-content {
+    margin-left: 280px;
+    max-width: calc(100% - 280px);
   }
 }
 
@@ -2379,7 +2374,8 @@ input:checked+.slider:before {
 .saved-recipe-card {
   cursor: pointer;
   margin: 0 auto;
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
 }
 
 /* User Greeting Styles */
@@ -2388,11 +2384,11 @@ input:checked+.slider:before {
 }
 
 .greeting-text {
-  font-size: 1.8rem;
+  font-size: clamp(1.25rem, 4.5vw, 1.8rem);
   font-weight: 700;
   color: var(--text-color);
   letter-spacing: -0.5px;
-  margin-bottom: 6px;
+  margin-bottom: clamp(4px, 1vw, 6px);
   position: relative;
   display: inline-block;
 }
@@ -2409,9 +2405,9 @@ input:checked+.slider:before {
 }
 
 .greeting-subtext {
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
   color: var(--text-secondary);
-  margin-top: 12px;
+  margin-top: clamp(8px, 2vw, 12px);
 }
 
 /* User Profile Styles */
@@ -2531,9 +2527,9 @@ input:checked+.slider:before {
   color: var(--text-color);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .sidebar-footer {
-    display: none;
+    display: block;
   }
 
   .greeting-text {
@@ -2617,7 +2613,7 @@ input:checked+.slider:before {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: clamp(12px, 3vw, 20px);
 }
 
 .header-content h2 {
@@ -2748,7 +2744,7 @@ input:checked+.slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   padding: 20px;
   background-color: var(--background-color);
@@ -2756,18 +2752,19 @@ input:checked+.slider:before {
     radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 300px),
     radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.1) 0%, transparent 300px);
   transition: background-color 0.3s ease;
+  overflow: hidden;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 1000px;
+  max-width: min(1000px, 100% - 24px);
   background-color: var(--card-background);
   border-radius: 16px;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   height: auto;
-  max-height: 90vh;
+  max-height: calc(100dvh - 40px);
   overflow: hidden;
   transition: background-color 0.3s ease;
 }
@@ -2806,6 +2803,10 @@ input:checked+.slider:before {
   display: flex;
   flex: 1;
   height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0;
+  padding: 16px 0;
 }
 
 .auth-image {
@@ -2823,13 +2824,14 @@ input:checked+.slider:before {
 
 .auth-form {
   flex: 1;
-  padding: 32px;
+  padding: 24px 32px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  max-height: calc(90vh - 60px);
-  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-height: none;
+  overflow: visible;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .login-content {
@@ -2839,8 +2841,8 @@ input:checked+.slider:before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-height: 100%;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
   padding: 0 16px;
   box-sizing: border-box;
 }
@@ -2983,6 +2985,7 @@ input[type="radio"]:checked+.radio-label {
 @media (max-width: 768px) {
   .auth-content-wrapper {
     flex-direction: column;
+    max-height: calc(100dvh - 100px);
   }
 
   .auth-image {
@@ -2991,18 +2994,19 @@ input[type="radio"]:checked+.radio-label {
 
   .auth-form {
     padding: 20px;
-    max-height: calc(100vh - 100px);
+    max-height: none;
     align-items: flex-start;
+    overflow: visible;
   }
 
   .auth-card {
     height: auto;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
   }
 
   .login-content {
     padding: 0 12px;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100dvh - 120px);
   }
 
   .auth-toggle-buttons {
@@ -3091,7 +3095,7 @@ input[type="radio"]:checked+.radio-label {
 .recipes-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: clamp(12px, 3vw, 16px);
   width: 100%;
 }
 
@@ -3667,7 +3671,7 @@ input[type="radio"]:checked+.radio-label {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: clamp(10px, 3vw, 16px);
 }
 
 .selection-mode-toggle {
